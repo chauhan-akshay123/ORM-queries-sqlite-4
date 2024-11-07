@@ -1,131 +1,189 @@
 # Company Management API
 
-This API is designed to manage and query a list of companies with features like database seeding, fetching company details, filtering by industry, and sorting by revenue. It uses Node.js, Express, Sequelize, and SQLite.
+This is a RESTful API that allows you to manage company data in a database. The API is built with Node.js, Express, and Sequelize ORM, and it provides endpoints for seeding, fetching, adding, updating, and deleting company information.
 
-## Getting Started
+## Prerequisites
 
-### Prerequisites
+Before running the application, ensure you have the following installed:
 
-- **Node.js** and **npm** installed.
-- **SQLite** installed (or ensure the `sqlite3` npm package is used if SQLite is not separately installed).
+- **Node.js** (version 14 or higher)
+- **Sequelize** (for ORM)
+- **PostgreSQL** (or any other supported database)
 
-### Installation
+## Installation
 
-1. Clone this repository.
-2. Install the dependencies by running:
+1. **Clone the repository**:
+
+   ```bash
+   git clone <repository-url>
+   cd <project-directory>
+   ```
+
+2. **Install dependencies**:
 
    ```bash
    npm install
    ```
 
-3. Ensure `SQLite` database file (`database.sqlite`) is set up in the root folder, or update the configuration as needed in `lib/index.js`.
+3. **Set up your database**:
 
-### Configuration
+   Make sure you have your database configured and a `.env` file in the root of your project with the necessary database configuration:
 
-- The database is configured to use SQLite in `lib/index.js` with Sequelize.
+   ```plaintext
+   DB_HOST=your-db-host
+   DB_USER=your-db-user
+   DB_PASS=your-db-password
+   DB_NAME=your-db-name
+   ```
 
-### Starting the Server
+4. **Start the application**:
 
-Run the following command to start the server:
+   Run the server with:
 
-```bash
-node app.js
-```
+   ```bash
+   npm start
+   ```
 
-The server will start on `http://localhost:3000`.
+   The server will start on port `3000`.
 
----
+## API Endpoints
 
-## Endpoints
+### 1. Seed the database with company data
 
-### 1. Seed Database
+**GET** `/seed_db`
 
-**Endpoint**: `GET /seed_db`
+Seeds the database with a predefined set of company data.
 
-Seeds the database with initial company data.
-
-**Response**:
-- **200 OK**: `{"message": "Database seeding successful."}`
-- **500 Error**: `{"message": "Error seeding the database", "error": "<error_message>"}`
-
----
-
-### 2. Fetch All Companies
-
-**Endpoint**: `GET /companies`
-
-Fetches all companies from the database.
-
-**Response**:
-- **200 OK**: Returns all companies.
-- **404 Not Found**: `{"message": "No company found."}`
-- **500 Error**: `{"message": "Error fetching companies", "error": "<error_message>"}`
-
----
-
-### 3. Fetch Company Details by ID
-
-**Endpoint**: `GET /companies/details/:id`
-
-Fetches a company’s details by its ID.
-
-**Parameters**:
-- `id`: The company ID.
-
-**Response**:
-- **200 OK**: Returns the company details.
-- **404 Not Found**: `{"message": "No company found."}`
-- **500 Error**: `{"message": "Error fetching company details by Id.", "error": "<error_message>"}`
-
----
-
-### 4. Fetch Companies by Industry
-
-**Endpoint**: `GET /companies/industry/:industry`
-
-Fetches all companies in a specified industry.
-
-**Parameters**:
-- `industry`: The industry name (e.g., `Technology`, `Healthcare`).
-
-**Response**:
-- **200 OK**: Returns companies in the specified industry.
-- **404 Not Found**: `{"message": "No companies found."}`
-- **500 Error**: `{"message": "Error fetching companies by industry", "error": "<error_message>"}`
-
----
-
-### 5. Sort Companies by Revenue
-
-**Endpoint**: `GET /companies/revenue?order=asc|desc`
-
-Sorts companies by their revenue in ascending or descending order.
-
-**Query Parameter**:
-- `order`: Set to `asc` or `desc` to sort in ascending or descending order.
-
-**Response**:
-- **200 OK**: Returns companies sorted by revenue.
-- **404 Not Found**: `{"message": "No companies found."}`
-- **500 Error**: `{"message": "Error fetching sorted companies", "error": "<error_message>"}`
-
----
-
-## Sample Data
-
-The API seeds the following sample data on `/seed_db`:
-
+**Response**:  
 ```json
-[
-  {"id": 1, "name": "Tech Innovators", "industry": "Technology", "foundedYear": 2010, "headquarters": "San Francisco", "revenue": 75000000},
-  {"id": 2, "name": "Green Earth", "industry": "Renewable Energy", "foundedYear": 2015, "headquarters": "Portland", "revenue": 50000000},
-  {"id": 3, "name": "Innovatech", "industry": "Technology", "foundedYear": 2012, "headquarters": "Los Angeles", "revenue": 65000000},
-  ...
-]
+{
+  "message": "Database seeding successful."
+}
 ```
 
-## Technologies Used
+### 2. Fetch all companies
 
-- **Express**: For server handling.
-- **Sequelize**: As the ORM for database handling.
-- **SQLite**: As the database for local storage.
+**GET** `/companies`
+
+Fetches a list of all companies in the database.
+
+**Response**:  
+```json
+{
+  "companies": [ ... ]
+}
+```
+
+### 3. Fetch company details by ID
+
+**GET** `/companies/details/:id`
+
+Fetches details of a company based on the provided `id`.
+
+**Response**:  
+```json
+{
+  "company": { ... }
+}
+```
+
+### 4. Fetch companies by industry
+
+**GET** `/companies/industry/:industry`
+
+Fetches a list of companies that belong to the specified `industry`.
+
+**Response**:  
+```json
+{
+  "companies": [ ... ]
+}
+```
+
+### 5. Sort companies by revenue
+
+**GET** `/companies/revenue`
+
+Sorts companies by their `revenue`. Use the query parameter `order` to specify the order:
+
+- `asc` for ascending
+- `desc` for descending
+
+**Example**: `/companies/revenue?order=desc`
+
+**Response**:  
+```json
+{
+  "companies": [ ... ]
+}
+```
+
+### 6. Add a new company
+
+**POST** `/companies/new`
+
+Adds a new company to the database. You need to send a request body with the following data:
+
+**Request Body**:  
+```json
+{
+  "newCompany": {
+    "name": "Company Name",
+    "industry": "Industry Type",
+    "foundedYear": 2020,
+    "headquarters": "City",
+    "revenue": 1000000
+  }
+}
+```
+
+**Response**:  
+```json
+{
+  "newCompany": { ... }
+}
+```
+
+### 7. Update company information
+
+**POST** `/companies/update/:id`
+
+Updates the company information with the provided `id`.
+
+**Request Body**:  
+```json
+{
+  "name": "Updated Company Name",
+  "industry": "Updated Industry",
+  "foundedYear": 2021,
+  "headquarters": "Updated City",
+  "revenue": 2000000
+}
+```
+
+**Response**:  
+```json
+{
+  "message": "Company information updated successfully."
+}
+```
+
+### 8. Delete a company
+
+**POST** `/companies/delete`
+
+Deletes a company based on the provided `id`.
+
+**Request Body**:  
+```json
+{
+  "id": 1
+}
+```
+
+**Response**:  
+```json
+{
+  "message": "Company record has been deleted successfully."
+}
+```
